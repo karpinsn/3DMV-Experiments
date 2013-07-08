@@ -16,7 +16,7 @@ else
     scale = 1;
 end
 
-if size( image, 3 ) == 3
+if size( image, 3 ) == 3 
     
     % RGB
     fid = fopen( filename, 'wb' );
@@ -31,6 +31,23 @@ if size( image, 3 ) == 3
     fwrite( fid, shiftdim( tmp, 2 ), 'float32' );
     fclose( fid );
 
+elseif size( image, 3 ) == 4
+    disp('4 Channel images are not in the standard. Writing the image anyways, make sure the reader supports this file type'); 
+    
+    % RGBA
+    fid = fopen( filename, 'wb' );
+    fprintf( fid, 'PFA\n' );
+    fprintf( fid, '%d %d\n', size( image,2 ), size( image, 1 ) );
+    fprintf( fid, '%f\n', -scale );
+    
+    tmp( :, :, 1 ) = image( :, :, 1 )';
+    tmp( :, :, 2 ) = image( :, :, 2 )';
+    tmp( :, :, 3 ) = image( :, :, 3 )';
+    tmp( :, :, 4 ) = image( :, :, 4 )';
+    
+    fwrite( fid, shiftdim( tmp, 2 ), 'float32' );
+    fclose( fid );
+    
 elseif size( image, 3 ) == 1
     
     % Greyscale

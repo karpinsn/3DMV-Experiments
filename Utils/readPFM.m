@@ -10,20 +10,38 @@ function image = readPFM( filename )
 
 fid = fopen( filename );
 % read header
-id = fgetl( fid );
-width = fgetl( fid );
-height = fgetl( fid );
-% TODO: deal with the stupid whitespace issue
-dim( 1 ) = sscanf( width, '%d' );
-dim( 2 ) = sscanf( height, '%d' );
-scale = fgetl( fid );
-scale = sscanf( scale, '%f' ); % TODO: deal with endianness
+line1 = fgetl( fid );
+line2 = fgetl( fid );
+line3 = fgetl( fid );
+
+dim = sscanf( line2, '%d' );
+scale = sscanf( line3, '%f' ); % TODO: deal with endianness
 scale = abs( scale );
 
 data = fread( fid, inf, 'float32' );
 fclose( fid );
 
-if strcmp( id, 'PF' ),
+if strcmp( line1, 'PFA' )
+    % RGBA - This is not part of the standard, added for extra usefulness
+    if size( data, 1 ) == 4 * prod( dim ),
+        
+        redIndices = 1 : 4 : size( data, 1 );
+        red = data( redIndices );
+        green = data( redIndices + 1 );
+        blue = data( redIndices + 2 );
+        alpha = data( redIndices + 3 );
+        
+        % transpose image
+        image = zeros( dim(2), dim(1), 3 );
+        image( :, :, 1 ) = reshape( red, dim(1), dim(2) )';
+        image( :, :, 2 ) = reshape( green, dim(1), dim(2) )';
+        image( :, :, 3 ) = reshape( blue, dim(1), dim(2) )';
+        image( :, :, 4 ) = reshape( alpha, dim(1), dim(2) )';
+    else
+        error( 'File size and image dimensions mismatched!' );
+    end
+    
+elseif strcmp( line1, 'PF' ),
     % RGB
     
     % check size
@@ -42,7 +60,7 @@ if strcmp( id, 'PF' ),
     else
         error( 'File size and image dimensions mismatched!' );
     end
-elseif strcmp( id, 'Pf' ),
+elseif strcmp( line1, 'Pf' ),
     % grey
     
     % check size

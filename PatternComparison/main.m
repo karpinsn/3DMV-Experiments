@@ -1,4 +1,4 @@
-[ error, spikeCount ] = OptimalSixFringeWaveFinder( 1024 );
+[ error, spikeCount ] = OptimalSixFringeWaveFinder( 1024, 32 );
 csvwrite( 'error1.csv', error );
 csvwrite( 'error2.csv', spikeCount / 1024 );
 

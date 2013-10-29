@@ -1,6 +1,6 @@
-start = 1;
+start = 0;
 
-fileSpec = 'fc2_save_2013-07-05-092002-000%d.png';
+fileSpec = 'fc2_save_2013-07-16-100144-000%d.png';
 
 fringe1(:,:,1) = rgb2gray(imread(sprintf(fileSpec, start))); start = mod(start + 1, 6);
 fringe1(:,:,2) = rgb2gray(imread(sprintf(fileSpec, start))); start = mod(start + 1, 6);
